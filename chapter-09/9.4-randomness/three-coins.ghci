@@ -1,0 +1,24 @@
+import System.Random 
+
+:set -XMonomorphismRestriction
+
+:{
+threeCoins :: StdGen -> (Bool, Bool, Bool)
+threeCoins gen =
+    let (firstCoin, newGen) = random gen
+        (secondCoin, newGen') = random newGen
+        (thirdCoin, newGen'') = random newGen'
+    in  (firstCoin, secondCoin, thirdCoin)
+:}
+
+threeCoins (mkStdGen 21)  
+--(True,True,True)  
+threeCoins (mkStdGen 22)  
+--(True,False,True)  
+threeCoins (mkStdGen 943)  
+--(True,False,True)  
+threeCoins (mkStdGen 944)  
+--(True,True,True)
+
+
+

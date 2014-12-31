@@ -1,0 +1,87 @@
+data Tree a = Empty | Node a (Tree a) (Tree a) deriving (Show)  
+
+data Direction = L | R deriving (Show)  
+type Directions = [Direction]  
+
+type Breadcrumbs = [Direction]  
+
+data Crumb a = LeftCrumb a (Tree a) | RightCrumb a (Tree a) deriving (Show)  
+
+type Breadcrumbs a = [Crumb a]  
+
+type Zipper a = (Tree a, Breadcrumbs a)  
+
+
+:{
+freeTree :: Tree Char  
+freeTree =   
+    Node 'P'  
+        (Node 'O'  
+            (Node 'L'  
+                (Node 'N' Empty Empty)  
+                (Node 'T' Empty Empty)  
+            )  
+            (Node 'Y'  
+                (Node 'S' Empty Empty)  
+                (Node 'A' Empty Empty)  
+            )  
+        )  
+        (Node 'L'  
+            (Node 'W'  
+                (Node 'C' Empty Empty)  
+                (Node 'R' Empty Empty)  
+            )  
+            (Node 'A'  
+                (Node 'A' Empty Empty)  
+                (Node 'C' Empty Empty)  
+            )  
+        )  
+:}
+
+x -: f = f x  
+
+--
+
+:{
+goLeft :: Zipper a -> Maybe (Zipper a)
+goLeft (Node x l r, bs) = Just (l, LeftCrumb x r:bs)
+goLeft (Empty, _) = Nothing
+:}
+
+:{
+goRight :: Zipper a -> Maybe (Zipper a)
+goRight (Node x l r, bs) = Just (r, RightCrumb x l:bs)
+goRight (Empty, _) = Nothing
+:}
+
+goLeft (Empty, [])  
+--Nothing  
+goLeft (Node 'A' Empty Empty, [])  
+--Just (Empty,[LeftCrumb 'A' Empty])  
+
+:{
+goUp :: Zipper a -> Zipper a
+goUp (t, LeftCrumb x r:bs) = (Node x t r, bs)
+goUp (t, RightCrumb x l:bs) = (Node x l t, bs)
+:}
+
+:{
+goUp :: Zipper a -> Maybe (Zipper a)
+goUp (t, LeftCrumb x r:bs) = Just (Node x t r, bs)
+goUp (t, RightCrumb x l:bs) = Just (Node x l t, bs)
+goUp (_, []) = Nothing
+:}
+
+
+--let newFocus = (freeTree,[]) -: goLeft -: goRight
+--doesn't work
+
+let coolTree = Node 1 Empty (Node 3 Empty Empty)  
+return (coolTree,[]) >>= goRight  
+--Just (Node 3 Empty Empty,[RightCrumb 1 Empty])  
+return (coolTree,[]) >>= goRight >>= goRight  
+--Just (Empty,[RightCrumb 3 Empty,RightCrumb 1 Empty])  
+return (coolTree,[]) >>= goRight >>= goRight >>= goRight  
+--Nothing  
+
+

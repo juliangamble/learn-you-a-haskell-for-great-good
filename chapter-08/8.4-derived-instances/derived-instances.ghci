@@ -1,0 +1,114 @@
+
+:{
+data Person = Person { firstName :: String , lastName :: String
+, age :: Int }
+:}
+
+:{
+data Person = Person { firstName :: String
+, lastName :: String , age :: Int
+} deriving (Eq)
+:}
+
+
+let mikeD = Person {firstName = "Michael", lastName = "Diamond", age = 43}
+let adRock = Person {firstName = "Adam", lastName = "Horovitz", age = 41}
+let mca = Person {firstName = "Adam", lastName = "Yauch", age = 44}
+
+mca == adRock  
+--False  
+mikeD == adRock  
+--False  
+mikeD == mikeD  
+--True  
+mikeD == Person {firstName = "Michael", lastName = "Diamond", age = 43}  
+--True  
+
+let beastieBoys = [mca, adRock, mikeD]  
+mikeD `elem` beastieBoys  
+--True  
+
+data Person = Person { firstName :: String, lastName :: String, age :: Int } deriving (Eq, Show, Read)  
+
+let mikeD = Person {firstName = "Michael", lastName = "Diamond", age = 43}  
+mikeD  
+--Person {firstName = "Michael", lastName = "Diamond", age = 43}  
+"mikeD is: " ++ show mikeD  
+--"mikeD is: Person {firstName = \"Michael\", lastName = \"Diamond\", age = 43}" 
+
+read "Person {firstName =\"Michael\", lastName =\"Diamond\", age = 43}" :: Person 
+--Person {firstName = "Michael", lastName = "Diamond", age = 43}  
+
+
+read "Person {firstName =\"Michael\", lastName =\"Diamond\", age = 43}" == mikeD  
+--True
+
+-- Hypothetical
+--data Bool = False | True deriving (Ord)
+
+
+
+
+True `compare` False  
+--GT  
+True > False  
+--True  
+True < False  
+--False 
+
+
+Nothing < Just 100  
+--True  
+Nothing > Just (-49999)  
+--False  
+Just 3 `compare` Just 2  
+--GT  
+Just 100 > Just 50  
+--True 
+
+
+
+data Day = Monday | Tuesday | Wednesday | Thursday | Friday | Saturday | Sunday
+
+:{
+data Day = Monday | Tuesday | Wednesday | Thursday | Friday | Saturday | Sunday   
+           deriving (Eq, Ord, Show, Read, Bounded, Enum)  
+:}
+
+
+
+Wednesday
+--Wednesday  
+show Wednesday
+--"Wednesday"
+read "Saturday" :: Day
+--Saturday
+
+
+Saturday == Sunday
+--False  
+Saturday == Saturday
+--True  
+Saturday > Friday
+--True  
+Monday `compare` Wednesday
+--LT  
+
+minBound :: Day
+--Monday  
+maxBound :: Day
+--Sunday  
+
+
+succ Monday
+--Tuesday  
+pred Saturday
+--Friday  
+[Thursday .. Sunday]  
+--[Thursday,Friday,Saturday,Sunday]  
+[minBound .. maxBound] :: [Day]  
+--[Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday]  
+
+
+
+

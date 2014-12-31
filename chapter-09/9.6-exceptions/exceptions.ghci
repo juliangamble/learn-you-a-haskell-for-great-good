@@ -1,0 +1,4 @@
+4 `div` 0  
+-- *** Exception: divide by zero  
+head []  
+-- *** Exception: Prelude.head: empty list 

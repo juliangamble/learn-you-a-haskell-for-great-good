@@ -1,0 +1,6 @@
+:t head  
+--head :: [a] -> a  
+
+:t fst  
+--fst :: (a, b) -> a  
+

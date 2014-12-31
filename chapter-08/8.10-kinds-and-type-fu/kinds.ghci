@@ -1,0 +1,74 @@
+
+:k Int  
+--Int :: *  
+
+:k Maybe Int  
+--Maybe Int :: * 
+
+:k Either  
+--Either :: * -> * -> *  
+
+
+:k Either String  
+--Either String :: * -> *  
+:k Either String Int  
+--Either String Int :: *  
+
+:{
+{--
+class Functor f where   
+    fmap :: (a -> b) -> f a -> f b  
+--}
+:}
+
+:{
+class Tofu t where  
+    tofu :: j a -> t a j 
+:}  
+
+data Frank a b  = Frank {frankField :: b a} deriving (Show)  
+
+:{
+
+data Tree a = EmptyTree | Node a (Tree a) (Tree a) deriving (Show, Read, Eq)  
+
+instance Functor Tree where  
+    fmap f EmptyTree = EmptyTree  
+    fmap f (Node x leftsub rightsub) = Node (f x) (fmap f leftsub) (fmap f rightsub) 
+:}
+
+:{
+singleton :: a -> Tree a  
+singleton x = Node x EmptyTree EmptyTree  
+:}
+
+:t Frank {frankField = Just "HAHA"}  
+--Frank {frankField = Just "HAHA"} :: Frank [Char] Maybe  
+:t Frank {frankField = Node 'a' EmptyTree EmptyTree}  
+--Frank {frankField = Node 'a' EmptyTree EmptyTree} :: Frank Char Tree  
+:t Frank {frankField = "YES"}  
+--Frank {frankField = "YES"} :: Frank Char [] 
+
+
+:{
+instance Tofu Frank where  
+    tofu x = Frank x  
+:}
+
+tofu (Just 'a') :: Frank Char Maybe  
+--Frank {frankField = Just 'a'}  
+tofu ["HELLO"] :: Frank [Char] []  
+--Frank {frankField = ["HELLO"]}  
+
+
+data Barry t k p = Barry { yabba :: p, dabba :: t k }  
+
+:k Barry  
+--Barry :: (* -> *) -> * -> * -> *  
+
+:{
+instance Functor (Barry a b) where
+    fmap f (Barry {yabba = x, dabba = y}) = Barry {yabba = f x, dabba = y}
+:}
+
+

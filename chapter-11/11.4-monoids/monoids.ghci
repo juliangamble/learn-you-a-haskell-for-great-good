@@ -1,0 +1,282 @@
+4 * 1  
+--4
+1 * 9  
+--9  
+[1,2,3] ++ []  
+--[1,2,3]  
+[] ++ [0.5, 2.5]  
+--[0.5,2.5]  
+
+(3 * 2) * (8 * 5)  
+--240  
+3 * (2 * (8 * 5))  
+--240  
+"la" ++ ("di" ++ "da")  
+--"ladida"  
+("la" ++ "di") ++ "da"  
+--"ladida"  
+
+[1,2,3] `mappend` [4,5,6]
+--[1,2,3,4,5,6]  
+("one" `mappend` "two") `mappend` "tree"  
+--"onetwotree"  
+"one" `mappend` ("two" `mappend` "tree")  
+--"onetwotree"  
+"one" `mappend` "two" `mappend` "tree"  
+--"onetwotree"  
+"pang" `mappend` mempty  
+--"pang"  
+mconcat [[1,2],[3,6],[9]]  
+--[1,2,3,6,9]  
+mempty :: [a]  
+--[]  
+
+"one" `mappend` "two"  
+--"onetwo"  
+"two" `mappend` "one"  
+--"twoone" 
+
+0 + 4  
+--4  
+5 + 0  
+--5  
+(1 + 3) + 5  
+--9  
+1 + (3 + 5)  
+--9  
+
+:{
+newtype Product a =  Product { getProduct :: a }  
+    deriving (Eq, Ord, Read, Show, Bounded)  
+:}
+
+:{
+instance Num a => Monoid (Product a) where  
+    mempty = Product 1  
+    Product x `mappend` Product y = Product (x * y)
+:}
+
+
+getProduct $ Product 3 `mappend` Product 9  
+--27  
+getProduct $ Product 3 `mappend` mempty  
+--3  
+getProduct $ Product 3 `mappend` Product 4 `mappend` Product 2  
+--24  
+getProduct . mconcat . map Product $ [3,4,2]  
+--24  
+
+:{
+newtype Sum a = Sum { getSum :: a }  
+    deriving (Eq, Ord, Read, Show, Bounded)  
+:}
+
+:{
+instance Num a => Monoid (Sum a) where  
+    mempty = Sum 0  
+    Sum x `mappend` Sum y = Sum (x + y)
+:}
+
+getSum $ Sum 2 `mappend` Sum 9  
+--11  
+getSum $ mempty `mappend` Sum 3  
+--3  
+getSum . mconcat . map Sum $ [1,2,3]  
+--6  
+
+:{
+newtype Any = Any { getAny :: Bool }  
+    deriving (Eq, Ord, Read, Show, Bounded)  
+:}
+
+
+:{
+instance Monoid Any where
+    mempty = Any False
+    Any x `mappend` Any y = Any (x || y)
+:}
+
+getAny $ Any True `mappend` Any False  
+--True  
+getAny $ mempty `mappend` Any True  
+--True  
+getAny . mconcat . map Any $ [False, False, False, True]  
+--True  
+getAny $ mempty `mappend` mempty  
+--False  
+
+:{
+newtype All = All { getAll :: Bool }
+    deriving (Eq, Ord, Read, Show, Bounded)
+:}
+
+:{
+instance Monoid All where
+    mempty = All True
+    All x `mappend` All y = All (x && y)
+:}
+
+getAll $ mempty `mappend` All True  
+--True  
+getAll $ mempty `mappend` All False  
+--False  
+getAll . mconcat . map All $ [True, True, True]  
+--True  
+getAll . mconcat . map All $ [True, True, False]  
+--False  
+
+1 `compare` 2  
+--LT  
+2 `compare` 2  
+--EQ  
+3 `compare` 2  
+--GT  
+
+LT `mappend` GT  
+--LT  
+GT `mappend` LT  
+--GT  
+mempty `mappend` LT  
+--LT  
+mempty `mappend` GT  
+--GT
+
+:{
+lengthCompare :: String -> String -> Ordering
+lengthCompare x y = let a = length x `compare` length y
+                        b = x `compare` y
+                    in  if a == EQ then b else a
+:}
+
+import Data.Monoid  
+:{
+lengthCompare :: String -> String -> Ordering  
+lengthCompare x y = (length x `compare` length y) `mappend`  
+                    (x `compare` y)  
+:}
+
+lengthCompare "zen" "ants"  
+--LT  
+lengthCompare "zen" "ant"  
+--GT  
+
+:{
+import Data.Monoid  
+  
+lengthCompare :: String -> String -> Ordering
+lengthCompare x y = (length x `compare` length y) `mappend`
+                    (vowels x `compare` vowels y) `mappend`
+                    (x `compare` y)
+    where vowels = length . filter (`elem` "aeiou")
+:}
+
+lengthCompare "zen" "anna"  
+--LT  
+lengthCompare "zen" "ana"  
+--LT  
+lengthCompare "zen" "ann"  
+--GT  
+
+
+
+Nothing `mappend` Just "andy"  
+--Just "andy"  
+Just LT `mappend` Nothing  
+--Just LT  
+Just (Sum 3) `mappend` Just (Sum 4)  
+--Just (Sum {getSum = 7}) 
+
+:{
+newtype First a = First { getFirst :: Maybe a }  
+    deriving (Eq, Ord, Read, Show)  
+:}
+
+
+:{
+instance Monoid (First a) where
+    mempty = First Nothing
+    First (Just x) `mappend` _ = First (Just x)
+    First Nothing `mappend` x = x
+:}
+
+
+getFirst $ First (Just 'a') `mappend` First (Just 'b')  
+--Just 'a'
+getFirst $ First Nothing `mappend` First (Just 'b')  
+--Just 'b'  
+getFirst $ First (Just 'a') `mappend` First Nothing  
+--Just 'a'  
+
+
+
+getFirst . mconcat . map First $ [Nothing, Just 9, Just 10]  
+--Just 9 
+
+
+getLast . mconcat . map Last $ [Nothing, Just 9, Just 10]  
+--Just 10  
+getLast $ Last (Just "one") `mappend` Last (Just "two")  
+--Just "two"
+
+
+import qualified Data.Foldable as F
+
+:t foldr
+
+--foldr :: (a -> b -> b) -> b -> [a] -> b  
+:t F.foldr  
+--F.foldr :: (F.Foldable t) => (a -> b -> b) -> b -> t a -> b
+
+
+foldr (*) 1 [1,2,3]  
+--6  
+F.foldr (*) 1 [1,2,3]  
+--6  
+
+
+F.foldl (+) 2 (Just 9)  
+--11  
+F.foldr (||) False (Just True)  
+--True  
+
+data Tree a = Empty | Node a (Tree a) (Tree a) deriving (Show, Read, Eq)  
+
+:{
+--foldMap :: (Monoid m, Foldable t) => (a -> m) -> t a -> m  
+
+instance F.Foldable Tree where
+    foldMap f Empty = mempty
+    foldMap f (Node x l r) = F.foldMap f l `mappend`
+                             f x           `mappend`
+                             F.foldMap f r
+:}
+
+:{
+testTree = Node 5
+            (Node 3
+                (Node 1 Empty Empty)
+                (Node 6 Empty Empty)
+            )
+            (Node 9
+                (Node 8 Empty Empty)
+                (Node 10 Empty Empty)
+            )
+:}
+
+F.foldl (+) 0 testTree  
+--42  
+F.foldl (*) 1 testTree  
+--64800  
+
+
+getAny $ F.foldMap (\x -> Any $ x == 3) testTree  
+--True  
+
+
+getAny $ F.foldMap (\x -> Any $ x > 15) testTree  
+--False 
+
+F.foldMap (\x -> [x]) testTree  
+--[1,3,6,5,8,9,10]  
+
+

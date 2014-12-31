@@ -1,0 +1,122 @@
+type Birds = Int  
+type Pole = (Birds,Birds)  
+
+:{
+landLeft :: Birds -> Pole -> Pole
+landLeft n (left,right) = (left + n,right)
+:}
+
+:{
+landRight :: Birds -> Pole -> Pole
+landRight n (left,right) = (left,right + n)
+:}
+
+landLeft 2 (0,0)  
+--(2,0)  
+landRight 1 (1,2)  
+--(1,3)  
+landRight (-1) (1,2)  
+--(1,1)  
+
+landLeft 2 (landRight 1 (landLeft 1 (0,0)))  
+--(3,1)  
+
+x -: f = f x
+
+100 -: (*3)
+--300
+True -: not  
+--False
+(0,0) -: landLeft 2  
+--(2,0)  
+
+(0,0) -: landLeft 1 -: landRight 1 -: landLeft 2  
+--(3,1) 
+
+landLeft 10 (0,3)  
+--(10,3) 
+
+(0,0) -: landLeft 1 -: landRight 4 -: landLeft (-1) -: landRight (-2)  
+--(0,2)  
+
+:{
+landLeft :: Birds -> Pole -> Maybe Pole
+landLeft n (left,right)
+    | abs ((left + n) - right) < 4 = Just (left + n, right)
+    | otherwise                    = Nothing
+:}
+
+:{
+landRight :: Birds -> Pole -> Maybe Pole
+landRight n (left,right)
+    | abs (left - (right + n)) < 4 = Just (left, right + n)
+    | otherwise                    = Nothing
+:}
+
+
+landLeft 2 (0,0)  
+--Just (2,0)  
+landLeft 10 (0,3)  
+--Nothing 
+
+landRight 1 (0,0) >>= landLeft 2  
+--Just (2,1)
+
+
+Nothing >>= landLeft 2  
+--Nothing 
+
+
+return (0,0) >>= landRight 2 >>= landLeft 2 >>= landRight 2  
+--Just (2,4)  
+
+--Failure - just a throwback to the old one
+--(0,0) -: landLeft 1 -: landRight 4 -: landLeft (-1) -: landRight (-2)  
+--(0,2)  
+
+
+return (0,0) >>= landLeft 1 >>= landRight 4 >>= landLeft (-1) >>= landRight (-2)  
+--Nothing  
+
+:{
+banana :: Pole -> Maybe Pole  
+banana _ = Nothing 
+:}
+
+
+return (0,0) >>= landLeft 1 >>= banana >>= landRight 1  
+--Nothing 
+
+:{
+{--
+(>>) :: (Monad m) => m a -> m b -> m b
+m >> n = m >>= \_ -> n
+--}
+:}
+
+
+Nothing >> Just 3
+--Nothing  
+Just 3 >> Just 4
+--Just 4  
+Just 3 >> Nothing
+--Nothing  
+
+--Failure
+return (0,0) >>= landLeft 1 >> Nothing >>= landRight 1  
+--Nothing 
+
+:{
+routine :: Maybe Pole
+routine = case landLeft 1 (0,0) of
+    Nothing -> Nothing
+    Just pole1 -> case landRight 4 pole1 of
+        Nothing -> Nothing
+        Just pole2 -> case landLeft 2 pole2 of
+            Nothing -> Nothing
+            Just pole3 -> landLeft 1 pole3
+:}
+
+
+
+

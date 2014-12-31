@@ -1,0 +1,37 @@
+let f = (*5)  
+let g = (+3)  
+(fmap f g) 8  
+--55  
+
+let f = (+) <$> (*2) <*> (+10)  
+f 3  
+--19  
+
+:{
+{--
+instance Monad ((->) r) where  
+    return x = \_ -> x  
+    h >>= f = \w -> f (h w) w  
+--}
+:}
+
+import Control.Monad.Instances  
+
+:{  
+addStuff :: Int -> Int
+addStuff = do
+    a <- (*2)
+    b <- (+10)
+    return (a+b)
+:}
+
+addStuff 3  
+--19  
+
+:{
+addStuff :: Int -> Int
+addStuff x = let
+    a = (*2) x
+    b = (+10) x
+    in a+b
+:}

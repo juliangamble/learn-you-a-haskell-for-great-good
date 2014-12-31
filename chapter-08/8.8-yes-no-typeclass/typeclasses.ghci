@@ -1,0 +1,97 @@
+:{
+class YesNo a where  
+    yesno :: a -> Bool  
+:}
+
+:{
+instance YesNo Int where  
+    yesno 0 = False  
+    yesno _ = True  
+:}
+
+:{  
+instance YesNo [a] where  
+    yesno [] = False  
+    yesno _ = True  
+:}
+
+:{  
+instance YesNo Bool where  
+    yesno = id    
+:}
+
+:{  
+instance YesNo (Maybe a) where  
+    yesno (Just _) = True  
+    yesno Nothing = False  
+:}
+
+data Tree' a = EmptyTree | Node a (Tree' a) (Tree' a) deriving (Show, Read, Eq)  
+
+:{
+instance YesNo (Tree' a) where  
+    yesno EmptyTree = False  
+    yesno _ = True  
+:}
+
+data TrafficLight = Red | Yellow | Green  
+
+:{
+{-- 
+instance Eq TrafficLight where  
+    Red == Red = True  
+    Green == Green = True  
+    Yellow == Yellow = True  
+    _ == _ = False  
+
+instance Show TrafficLight where  
+    show Red = "Red light"  
+    show Yellow = "Yellow light"  
+    show Green = "Green light" 
+--}
+:}  
+
+:{
+instance YesNo TrafficLight where  
+    yesno Red = False  
+    yesno _ = True 
+:}
+
+yesno $ length []  
+--False  
+yesno "haha"  
+--True  
+yesno ""  
+--False  
+yesno $ Just 0  
+--True  
+yesno True  
+--True  
+yesno EmptyTree  
+--False  
+yesno []  
+--False  
+yesno [0,0,0]  
+--True  
+:t yesno  
+--yesno :: (YesNo a) => a -> Bool  
+
+:{
+yesnoIf :: (YesNo y) => y -> a -> a -> a  
+yesnoIf yesnoVal yesResult noResult = if yesno yesnoVal then yesResult else noResult    
+:}
+
+
+yesnoIf [] "YEAH!" "NO!"  
+--"NO!"  
+yesnoIf [2,3,4] "YEAH!" "NO!"  
+--"YEAH!"  
+yesnoIf True "YEAH!" "NO!"  
+--"YEAH!"  
+yesnoIf (Just 500) "YEAH!" "NO!"  
+--"YEAH!"  
+yesnoIf Nothing "YEAH!" "NO!"  
+--"NO!"  
+
+
+

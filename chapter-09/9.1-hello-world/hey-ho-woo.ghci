@@ -1,0 +1,8 @@
+3  
+--3  
+print 3  
+--3  
+map (++"!") ["hey","ho","woo"]  
+--["hey!","ho!","woo!"]  
+print (map (++"!") ["hey","ho","woo"])  
+--["hey!","ho!","woo!"]  

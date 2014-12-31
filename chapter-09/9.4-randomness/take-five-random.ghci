@@ -1,0 +1,31 @@
+import System.Random 
+
+take 5 $ randoms (mkStdGen 11) :: [Int]
+--[-1807975507,545074951,-1015194702,-1622477312,-502893664]  
+take 5 $ randoms (mkStdGen 11) :: [Bool]
+--[True,True,True,True,False]  
+take 5 $ randoms (mkStdGen 11) :: [Float] 
+--[7.904789e-2,0.62691015,0.26363158,0.12223756,0.38291094]  
+
+:{
+{--
+randoms' :: (RandomGen g, Random a) => g -> [a]  
+randoms' gen = let (value, newGen) = random gen in value:randoms' newGen
+
+finiteRandoms :: (RandomGen g, Random a, Num n) => n -> g -> ([a], g)  
+finiteRandoms 0 gen = ([], gen)  
+finiteRandoms n gen =   
+    let (value, newGen) = random gen  
+        (restOfList, finalGen) = finiteRandoms (n-1) newGen  
+    in  (value:restOfList, finalGen)
+--}
+:}
+
+randomR (1,6) (mkStdGen 359353)  
+--(6,1494289578 40692)  
+randomR (1,6) (mkStdGen 35935335)  
+--(3,1250031057 40692)  
+
+take 10 $ randomRs ('a','z') (mkStdGen 3) :: [Char]  
+--"ndkxbvmomg"
+

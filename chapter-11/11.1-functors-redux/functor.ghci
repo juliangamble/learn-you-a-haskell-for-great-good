@@ -1,0 +1,75 @@
+:t fmap (*3) (+100)  
+--fmap (*3) (+100) :: (Num a) => a -> a  
+fmap (*3) (+100) 1  
+--303  
+(*3) `fmap` (+100) $ 1  
+--303  
+(*3) . (+100) $ 1  
+--303  
+fmap (show . (*3)) (*100) 1  
+--"300"  
+
+:t fmap (*2)  
+--fmap (*2) :: (Num a, Functor f) => f a -> f a  
+:t fmap (replicate 3)  
+--fmap (replicate 3) :: (Functor f) => f a -> f [a]  
+
+fmap (replicate 3) [1,2,3,4]  
+--[[1,1,1],[2,2,2],[3,3,3],[4,4,4]]  
+fmap (replicate 3) (Just 4)  
+--Just [4,4,4]  
+fmap (replicate 3) (Right "blah")  
+--Right ["blah","blah","blah"]  
+fmap (replicate 3) Nothing  
+--Nothing  
+fmap (replicate 3) (Left "foo")  
+--Left "foo"  
+
+
+fmap id (Just 3)  
+--Just 3  
+id (Just 3)  
+--Just 3  
+fmap id [1..5]  
+--[1,2,3,4,5]  
+id [1..5]  
+--[1,2,3,4,5]  
+fmap id []  
+--[]  
+fmap id Nothing  
+--Nothing  
+
+data CMaybe a = CNothing | CJust Int a deriving (Show)  
+
+CNothing  
+--CNothing  
+CJust 0 "haha"  
+--CJust 0 "haha"  
+:t CNothing  
+--CNothing :: CMaybe a  
+:t CJust 0 "haha"  
+--CJust 0 "haha" :: CMaybe [Char]  
+CJust 100 [1,2,3]  
+--CJust 100 [1,2,3]  
+
+:{
+instance Functor CMaybe where  
+    fmap f CNothing = CNothing  
+    fmap f (CJust counter x) = CJust (counter+1) (f x)  
+:}
+
+fmap (++"ha") (CJust 0 "ho")  
+--CJust 1 "hoha"  
+fmap (++"he") (fmap (++"ha") (CJust 0 "ho"))  
+--CJust 2 "hohahe"  
+fmap (++"blah") CNothing  
+--CNothing  
+
+
+fmap id (CJust 0 "haha")  
+--CJust 1 "haha"  
+id (CJust 0 "haha")  
+--CJust 0 "haha"  
+
+
+

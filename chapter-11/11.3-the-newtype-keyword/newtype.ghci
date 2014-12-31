@@ -1,0 +1,84 @@
+[(+1),(*100),(*5)] <*> [1,2,3]  
+--[2,3,4,100,200,300,5,10,15]  
+
+import Control.Applicative
+
+getZipList $ ZipList [(+1),(*100),(*5)] <*> ZipList [1,2,3]  
+--[2,200,15]  
+
+data ZipList a = ZipList [a]  
+
+data ZipList a = ZipList { getZipList :: [a] }  
+
+newtype ZipList a = ZipList { getZipList :: [a] }  
+
+data Profession = Fighter | Archer | Accountant  
+  
+data Race = Human | Elf | Orc | Goblin  
+  
+data PlayerCharacter = PlayerCharacter Race Profession
+
+newtype CharList = CharList { getCharList :: [Char] } deriving (Eq, Show)  
+
+CharList "this will be shown!"  
+--CharList {getCharList = "this will be shown!"}  
+CharList "benny" == CharList "benny"  
+--True  
+CharList "benny" == CharList "oisters"  
+--False  
+
+newtype Pair b a = Pair { getPair :: (a,b) }  
+
+:{
+instance Functor (Pair c) where  
+    fmap f (Pair (x,y)) = Pair (f x, y)  
+:}
+
+--fmap :: (a -> b) -> Pair c a -> Pair c b  
+
+:{
+class Functor f where  
+    fmap :: (a -> b) -> f a -> f b  
+:}
+
+getPair $ fmap (*100) (Pair (2,3))  
+--(200,3)  
+getPair $ fmap reverse (Pair ("london calling", 3))  
+--("gnillac nodnol",3)  
+
+undefined  
+--*** Exception: Prelude.undefined 
+
+head [3,4,5,undefined,2,undefined]  
+--3  
+
+data CoolBool = CoolBool { getCoolBool :: Bool }  
+
+--helloMe :: CoolBool -> String  
+helloMe (CoolBool _) = "hello"  
+
+
+helloMe undefined  
+--"*** Exception: Prelude.undefined  
+
+newtype CoolBool = CoolBool { getCoolBool :: Bool }  
+
+helloMe undefined  
+--"hello"  
+
+type IntList = [Int]  
+
+
+([1,2,3] :: IntList) ++ ([1,2,3] :: [Int])  
+---[1,2,3,1,2,3] 
+
+newtype CharList = CharList { getCharList :: [Char] }  
+
+
+
+
+
+
+
+
+

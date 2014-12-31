@@ -1,0 +1,92 @@
+
+import Control.Monad.State  
+
+type Stack = [Int]
+
+:{
+pop :: State Stack Int
+--pop = State $ \(x:xs) -> (x,xs)
+pop =
+    get >>=
+    \(x:xs) -> put xs >>
+    return x
+:}
+
+
+:{
+push :: Int -> State Stack ()
+--push a = State $ \xs -> ((),a:xs)
+push a = do
+    xs <- get
+    put (a:xs)
+    return ()
+:}
+
+import Control.Monad.State
+
+
+:{
+stackManip :: State Stack Int
+stackManip = do
+    push 3
+    a <- pop
+    pop
+:}
+
+runState stackManip [5,8,2,1]  
+--(5,[8,2,1]) 
+
+:{
+stackManip :: State Stack Int
+stackManip = do
+    push 3
+    pop
+    pop
+:}
+
+runState stackManip [5,8,2,1]  
+--(5,[8,2,1]) 
+
+:{
+stackStuff :: State Stack ()
+stackStuff = do
+    a <- pop
+    if a == 5
+        then push 5
+        else do
+            push 3
+            push 8
+:}
+
+runState stackStuff [9,0,2,1,0]  
+--((),[8,3,0,2,1,0])  
+
+:{
+moreStack :: State Stack ()
+moreStack = do
+    a <- stackManip
+    if a == 100
+        then stackStuff
+        else return ()
+:}
+
+runState moreStack [100,9,0,2,1,0]
+--((),[8,3,0,2,1,0])
+runState moreStack [9,0,2,1,0]
+--((),[0,2,1,0])
+runState moreStack [100,5,4,3,2,1]
+--((),[5,4,3,2,1])
+
+:{
+stackyStack :: State Stack ()
+stackyStack = do
+    stackNow <- get
+    if stackNow == [1,2,3]
+        then put [8,3,1]
+        else put [9,2,1]
+:}
+
+runState stackyStack [1,2,3]
+--((),[8,3,1])
+runState stackyStack [10,20,30,40]
+--((),[9,2,1])

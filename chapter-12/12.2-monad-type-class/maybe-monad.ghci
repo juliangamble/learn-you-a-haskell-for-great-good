@@ -1,0 +1,6 @@
+return "WHAT" :: Maybe String
+--Just "WHAT"  
+Just 9 >>= \x -> return (x*10)  
+--Just 90  
+Nothing >>= \x -> return (x*10)  
+--Nothing  

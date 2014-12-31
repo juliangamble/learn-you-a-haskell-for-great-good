@@ -1,0 +1,10 @@
+random (mkStdGen 100)  
+
+:{
+{--
+<interactive>:1:0:  
+    Ambiguous type variable `a' in the constraint:  
+      `Random a' arising from a use of `random' at <interactive>:1:0-20  
+    Probable fix: add a type signature that fixes these type variable(s)  
+--}
+:}

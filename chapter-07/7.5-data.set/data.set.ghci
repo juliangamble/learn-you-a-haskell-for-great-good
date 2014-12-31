@@ -1,0 +1,66 @@
+import qualified Data.Set as Set 
+
+text1 = "I just had an anime dream. Anime... Reality... Are they so different?"  
+text2 = "The old man left his garbage can out and now his trash is all over my lawn!"
+
+let set1 = Set.fromList text1  
+let set2 = Set.fromList text2  
+set1  
+--fromList " .?AIRadefhijlmnorstuy"  
+set2  
+--fromList " !Tabcdefghilmnorstuvwy"  
+
+Set.intersection set1 set2  
+--fromList " adefhilmnorstuy" 
+
+Set.difference set1 set2  
+--fromList ".?AIRj"  
+Set.difference set2 set1  
+--fromList "!Tbcgvw"  
+
+
+Set.union set1 set2  
+--fromList " !.?AIRTabcdefghijlmnorstuvwy"  
+
+Set.null Set.empty  
+--True  
+Set.null $ Set.fromList [3,4,5,5,4,3]  
+--False  
+Set.size $ Set.fromList [3,4,5,3,4,5]  
+--3  
+Set.singleton 9  
+--fromList [9]  
+Set.insert 4 $ Set.fromList [9,3,8,1]  
+--fromList [1,3,4,8,9]  
+Set.insert 8 $ Set.fromList [5..10]  
+--fromList [5,6,7,8,9,10]  
+Set.delete 4 $ Set.fromList [3,4,5,4,3,4,5]  
+--fromList [3,5]  
+
+
+
+Set.fromList [2,3,4] `Set.isSubsetOf` Set.fromList [1,2,3,4,5]  
+--True  
+Set.fromList [1,2,3,4,5] `Set.isSubsetOf` Set.fromList [1,2,3,4,5]  
+--True  
+Set.fromList [1,2,3,4,5] `Set.isProperSubsetOf` Set.fromList [1,2,3,4,5]  
+--False  
+Set.fromList [2,3,4,8] `Set.isSubsetOf` Set.fromList [1,2,3,4,5]  
+--False  
+
+
+Set.filter odd $ Set.fromList [3,4,5,6,7,2,3,4]  
+--fromList [3,5,7]  
+Set.map (+1) $ Set.fromList [3,4,5,6,7,2,3,4]  
+--fromList [3,4,5,6,7,8]  
+
+let setNub xs = Set.toList $ Set.fromList xs
+setNub "HEY WHATS CRACKALACKIN"
+--" ACEHIKLNRSTWY"
+
+import Data.List
+
+nub "HEY WHATS CRACKALACKIN"
+--"HEY WATSCRKLIN"
+
+
